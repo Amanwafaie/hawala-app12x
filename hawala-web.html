@@ -1497,4 +1497,64 @@ A.report=function(){go('report',{cid:stack[stack.length-1].id})};
 A.printRep=function(){try{window.print()}catch(e){toast(L('چاپ در این مرورگر ممکن نیست؛ «دانلود گزارش» را بزنید'))}};
 A.dlRep=function(){
   var c=co(stack[stack.length-1].cid);
-  var html='<!DOCTYPE html><html lang="'+(db.lang==='en'?'e
+  var html='<!DOCTYPE html><html lang="'+(db.lang==='en'?'en':'fa')+'" dir="'+(db.lang==='en'?'ltr':'rtl')+'"><head><meta charset="utf-8"><title>'+L('گزارش')+' '+esc(c.name)+'</title><style>:root{--tx:#111;--mu:#555;--bd:#bbb;--s2:#f2f2f2}body{font-family:Vazirmatn,Tahoma,sans-serif;margin:24px;color:#111}'+REPORT_CSS+'</style></head><body>'+reportHTML(c)+'</body></html>';
+  saveFile('hawala-report-'+safeName(c.name)+'-'+stamp()+'.html',html,'text/html').then(function(s){
+    if(s==='saved')toast(L('گزارش ذخیره شد؛ آن را باز کنید و چاپ یا PDF بگیرید'));else if(s==='fail')toast(L('ذخیرهٔ گزارش ممکن نشد'));
+  });
+};
+
+/* closing a month */
+A.closeMonth=function(){
+  var c=co(stack[stack.length-1].id),j=jToday();
+  var mo=MONTHS.map(function(m,i){return '<option value="'+(i+1)+'"'+(i+1===j[1]?' selected':'')+'>'+m+'</option>'}).join('');
+  var yo='';for(var y=j[0]+1;y>=j[0]-3;y--)yo+='<option value="'+y+'"'+(y===j[0]?' selected':'')+'>'+D(y)+'</option>';
+  function monthSummary(){
+    var m=Number($('#cm_m').value),y=Number($('#cm_y').value);
+    function inMonth(r){var g=r.date.split('-').map(Number),jj=g2j(g[0],g[1],g[2]);return jj[0]===y&&jj[1]===m}
+    var r=calc(c.read.filter(inMonth)),p=calc(c.paid.filter(inMonth)),diff=r.total-p.total;return {r:r,p:p,diff:diff,st:statusOf(diff)};
+  }
+  openSheet('<h2>'+L('بستن حساب ماه')+'</h2><p class="mu">'+L('وضعیت همین ماه ذخیره می‌شود. حواله‌ها حذف نمی‌شوند و حساب جاری ادامه پیدا می‌کند.')+'</p>'+
+    '<div class="field" id="fld_cm"><label>'+L('کدام ماه بسته شود؟')+'</label><div class="three" style="grid-template-columns:1.6fr 1.2fr"><select id="cm_m" aria-label="'+(db.lang==='en'?'Month':'ماه')+'">'+mo+'</select><select id="cm_y" aria-label="'+(db.lang==='en'?'Year':'سال')+'">'+yo+'</select></div><div class="msg" id="msg_cm" hidden></div></div>'+
+    '<div class="card" id="cm_preview" style="background:var(--s2)"></div>'+
+    '<div class="btns"><button class="btn pri" data-act="doClose">'+L('بستن ماه')+'</button><button class="btn" data-act="closeSheet">'+L('انصراف')+'</button></div>');
+  function paint(){var s=monthSummary();var el=$('#cm_preview');if(!el)return;el.innerHTML='<div class="lr" style="display:flex;justify-content:space-between"><span>'+L('جمع خوانده‌گی')+'</span><b>'+money(s.r.total)+'</b></div><div style="display:flex;justify-content:space-between"><span>'+L('جمع پرداختی')+'</span><b>'+money(s.p.total)+'</b></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><span>'+L('وضعیت')+'</span><span>'+pill(s.st)+' '+(s.diff?'<b>'+money(Math.abs(s.diff))+'</b>':'')+'</span></div>'}
+  paint();
+  ['cm_m','cm_y'].forEach(function(id){var el=$('#'+id);if(el)el.addEventListener('change',paint)});
+};
+A.doClose=function(){
+  clearErrs();
+  var c=co(stack[stack.length-1].id),m=Number($('#cm_m').value),y=Number($('#cm_y').value);
+  if(c.closed.some(function(x){return x.jy===y&&x.jm===m})){showErr('cm',L('این ماه قبلاً بسته شده است. ماه دیگری را انتخاب کنید یا آن را از تاریخچه حذف کنید'));return}
+  function inMonth(r){var g=r.date.split('-').map(Number),j=g2j(g[0],g[1],g[2]);return j[0]===y&&j[1]===m}
+  var pr=c.read.filter(inMonth),pp=c.paid.filter(inMonth);
+  var rt=calc(pr),pt=calc(pp),diff=rt.total-pt.total,closedAt=nowISO();
+  var it={id:uid(),jy:y,jm:m,label:MONTHS[m-1]+' '+y,closedAt:closedAt,updatedAt:closedAt,
+    readCount:rt.count,readTotal:rt.total,paidCount:pt.count,paidTotal:pt.total,diff:diff,status:statusOf(diff),
+    moveReadTotal:rt.total,movePaidTotal:pt.total,readList:JSON.parse(JSON.stringify(pr)),paidList:JSON.parse(JSON.stringify(pp))};
+  c.closed.unshift(it);clearCloudDeleted('closed',c.id,it.id);
+  save();closeSheet();render();toast(L('ماه ')+MONTHS[m-1]+' '+D(y)+L(' بسته شد'));
+};
+A.delClosed=function(el){
+  var cur=stack[stack.length-1],c=co(cur.cid),id=el.dataset.id;
+  confirmSheet({title:'حذف از تاریخچه',msg:L('فقط ثبت این ماه از تاریخچه پاک می‌شود. حواله‌های حساب دست نمی‌خورند.'),ok:'حذف',danger:true},function(){
+    markCloudDeleted('closed',cur.cid,id);c.closed=c.closed.filter(function(x){return x.id!==id});save();stack.pop();render();toast(L('از تاریخچه حذف شد'));
+  });
+};
+
+/* global click and keys */
+document.addEventListener('click',function(e){
+  var el=e.target.closest('[data-act]');if(!el)return;
+  var f=A[el.dataset.act];if(!f)return;
+  if(el.classList.contains('mi'))closeSheet();
+  f(el,e);
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});
+
+if(!storageOk)setTimeout(function(){toast('ذخیره‌سازی مرورگر فعال نیست؛ پشتیبان بگیرید')},600);
+render();
+if(cloudEnabled())initCloud();
+if(loadLockCfg().enabled)showLockGate();
+})();
+</script>
+</body>
+</html>
