@@ -297,6 +297,8 @@ var T={
 'ابری و همگام‌سازی':'Cloud & Sync',
 'داده‌ها فقط روی همین مرورگر ذخیره می‌شوند. برای هماهنگی زنده بین دو گوشی (شما و پدرتان)، باید یک پروژهٔ Firebase رایگان بسازید و اطلاعاتش را اینجا وارد کنید.':'Data is stored only on this browser. For live sync between two phones (you and your father), create a free Firebase project and enter its details here.',
 'قطع اتصال ابری':'Disconnect Cloud','اتصال به Firebase':'Connect to Firebase','فعلاً نه':'Not Now',
+'ورود دوباره':'Sign In Again','در حال تلاش برای اتصال...':'Trying to connect...',
+'اتصال ابری تنظیم شده ولی وارد نشده‌اید — معمولاً چون هنگام باز شدن برنامه اینترنت وصل نبوده. اطلاعات شما همین‌جا در گوشی امن است؛ برای ارسال/دریافت با گوشی دیگر، دوباره وارد شوید.':'Cloud sync is set up but you are not signed in — usually because the internet was off when the app opened. Your data is safe here on this phone; sign in again to send/receive with the other phone.',
 'این ۴ مقدار را از Firebase Console، بخش Project settings ← Web app کپی کنید.':'Copy these 4 values from the Firebase Console, under Project settings → Web app.',
 'ذخیره و اتصال':'Save & Connect','در حال اتصال به Firebase...':'Connecting to Firebase...',
 'ورود به حساب ابری':'Cloud Sign-in','با ایمیلی که در Firebase برای شما یا پدرتان ساخته شده وارد شوید.':'Sign in with the email created in Firebase for you or your father.',
@@ -485,7 +487,9 @@ function cloudStatusText(){return fb.user?('وارد شده: '+fb.user.email):'�
 function currentUserLabel(){return fb.user?fb.user.email.split('@')[0]:''}
 function loadScript(src){
   return new Promise(function(res,rej){
-    var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);
+    var ex=document.querySelector('script[src="'+src+'"]');
+    if(ex){if(ex.dataset.loaded==='1')return res();ex.addEventListener('load',res);ex.addEventListener('error',rej);return}
+    var s=document.createElement('script');s.src=src;s.onload=function(){s.dataset.loaded='1';res()};s.onerror=rej;document.head.appendChild(s);
   });
 }
 function docRef(){return fb.db.collection('hawala_shared').doc('data')}
@@ -1171,10 +1175,19 @@ A.saveThreshold=function(){
   db.debtThreshold=a;db.inactiveDays=d;db.settingsUpdatedAt=nowISO();save();closeSheet();render();toast(L('ذخیره شد'));
 };
 A.cloudSheet=function(){
-  var on=cloudEnabled();
-  openSheet('<h2>'+L('ابری و همگام‌سازی')+'</h2><p class="mu">'+(on?L('اتصال ابری فعال است. وضعیت: ')+cloudStatusText():L('داده‌ها فقط روی همین مرورگر ذخیره می‌شوند. برای هماهنگی زنده بین دو گوشی (شما و پدرتان)، باید یک پروژهٔ Firebase رایگان بسازید و اطلاعاتش را اینجا وارد کنید.'))+'</p>'+
-    (on?'<div class="btns"><button class="btn dng" data-act="cloudDisconnect">'+L('قطع اتصال ابری')+'</button><button class="btn" data-act="closeSheet">'+L('بستن')+'</button></div>':
-    '<div class="btns"><button class="btn pri" data-act="cloudSetup">'+L('اتصال به Firebase')+'</button><button class="btn" data-act="closeSheet">'+L('فعلاً نه')+'</button></div>'));
+  var on=cloudEnabled(),signedIn=on&&!!fb.user;
+  var body=!on?L('داده‌ها فقط روی همین مرورگر ذخیره می‌شوند. برای هماهنگی زنده بین دو گوشی (شما و پدرتان)، باید یک پروژهٔ Firebase رایگان بسازید و اطلاعاتش را اینجا وارد کنید.'):
+    signedIn?L('اتصال ابری فعال است. وضعیت: ')+cloudStatusText():
+    L('اتصال ابری تنظیم شده ولی وارد نشده‌اید — معمولاً چون هنگام باز شدن برنامه اینترنت وصل نبوده. اطلاعات شما همین‌جا در گوشی امن است؛ برای ارسال/دریافت با گوشی دیگر، دوباره وارد شوید.');
+  var btns=!on?'<div class="btns"><button class="btn pri" data-act="cloudSetup">'+L('اتصال به Firebase')+'</button><button class="btn" data-act="closeSheet">'+L('فعلاً نه')+'</button></div>':
+    signedIn?'<div class="btns"><button class="btn dng" data-act="cloudDisconnect">'+L('قطع اتصال ابری')+'</button><button class="btn" data-act="closeSheet">'+L('بستن')+'</button></div>':
+    '<div class="btns"><button class="btn pri" data-act="cloudRetry">'+L('ورود دوباره')+'</button><button class="btn dng" data-act="cloudDisconnect">'+L('قطع اتصال ابری')+'</button><button class="btn" data-act="closeSheet">'+L('بستن')+'</button></div>';
+  openSheet('<h2>'+L('ابری و همگام‌سازی')+'</h2><p class="mu">'+body+'</p>'+btns);
+};
+A.cloudRetry=function(){
+  closeSheet();toast(L('در حال تلاش برای اتصال...'));
+  if(fb.auth){showLoginGate();return}
+  initCloud();
 };
 A.cloudSetup=function(){
   openSheet('<h2>'+L('اتصال به Firebase')+'</h2><p class="mu">'+L('این ۴ مقدار را از Firebase Console، بخش Project settings ← Web app کپی کنید.')+'</p>'+
@@ -1336,6 +1349,9 @@ function curRem(){
 function bumpShare(r){r.shares=(r.shares||0)+1;r.updatedAt=nowISO();save();render()}
 
 /* ---------- visual receipt card (image, matches the user's design) ---------- */
+var RC_WAVES_TOP='<svg viewBox="0 0 400 150" width="100%" height="150" preserveAspectRatio="none" style="position:absolute;top:0;left:0;opacity:.5"><path d="M0,40 C100,90 300,0 400,55 L400,0 L0,0 Z" fill="#1d4fc4"/><path d="M0,70 C120,120 280,30 400,85 L400,0 L0,0 Z" fill="#2a63e0" opacity=".55"/><path d="M0,20 C140,70 260,-10 400,30" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/></svg>';
+function rcSkylineSVG(w){return '<svg viewBox="0 0 400 70" width="'+w+'" height="'+Math.round(w*70/400)+'" preserveAspectRatio="none" style="display:block"><path d="M0,70 L0,46 L18,46 L18,30 L30,30 L30,46 L46,46 L46,20 L58,20 L58,46 L80,46 L80,10 L84,10 L84,4 L88,10 L88,46 L110,46 L110,34 L124,34 L124,46 L150,46 L150,16 L158,16 L158,8 L166,16 L166,46 L190,46 L190,38 L204,38 L204,46 L230,46 L230,24 L240,24 L240,12 L250,24 L250,46 L270,46 L270,30 L282,30 L282,46 L306,46 L306,6 L312,6 L312,0 L318,6 L318,46 L340,46 L340,36 L352,36 L352,46 L400,46 L400,70 Z" fill="#0a1d4a" opacity=".9"/></svg>'}
+function rcSealSVG(){return '<svg viewBox="0 0 90 90" width="64" height="64"><circle cx="45" cy="45" r="42" fill="none" stroke="#9fc1ff" stroke-width="2" stroke-dasharray="4 3" opacity=".6"/><circle cx="45" cy="45" r="34" fill="#0d2452" stroke="#2a5fd6" stroke-width="2"/><g transform="translate(21,24)" fill="none" stroke="#fff" stroke-width="1.6"><path d="M24 44V22l24-12 24 12v22M28 44V26M40 44V26M52 44V26M16 44h64"/></g></svg>'}
 var RC_ICONS={
   bank:'<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.7"><path d="M3 21h18M4 21V10M20 21V10M2 10l10-6 10 6M6 10v11M10 10v11M14 10v11M18 10v11"/></svg>',
   doc:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="1.8"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
@@ -1370,11 +1386,13 @@ function receiptCardHTML(c,r){
     '<div style="font-size:17px;font-weight:700;color:#fff">'+words(r.amount)+' '+L('افغانی')+'</div></div>';
   var placeRow=r.place?rcRow(RC_ICONS.pin,L('محل پرداخت'),r.place):'';
   return ''+
-  '<div style="width:400px;font-family:Vazirmatn,Tahoma,sans-serif;direction:'+(db.lang==='en'?'ltr':'rtl')+';background:radial-gradient(circle at 30% 0%,#123068,#050b1c 70%);border-radius:22px;padding:26px 22px;box-shadow:0 0 0 1px rgba(120,170,255,.25) inset;color:#fff">'+
+  '<div style="width:400px;font-family:Vazirmatn,Tahoma,sans-serif;direction:'+(db.lang==='en'?'ltr':'rtl')+';background:radial-gradient(circle at 30% 0%,#123068,#050b1c 70%);border-radius:22px;box-shadow:0 0 0 1px rgba(120,170,255,.25) inset;color:#fff;position:relative;overflow:hidden">'+
+    RC_WAVES_TOP+
+    '<div style="position:relative;padding:26px 22px 0">'+
     '<div style="text-align:center;margin-bottom:18px">'+
-      '<div style="width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#2a5fd6,#0d2452);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;box-shadow:0 0 18px rgba(60,120,255,.5)">'+RC_ICONS.bank+'</div>'+
-      '<div style="font-size:20px;font-weight:800">'+esc(c.name)+'</div>'+
-      '<div style="font-size:12px;color:#9fc1ff;margin-top:4px;letter-spacing:.5px">'+L('سریع • مطمئن • در خدمت شما')+'</div>'+
+      '<div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#2a5fd6,#0d2452);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;box-shadow:0 0 18px rgba(60,120,255,.5)">'+RC_ICONS.bank+'</div>'+
+      '<div style="font-size:22px;font-weight:800">'+esc(c.name)+'</div>'+
+      '<div style="font-size:12px;color:#9fc1ff;margin-top:6px;letter-spacing:.5px">'+L('سریع • مطمئن • در خدمت شما')+'</div>'+
     '</div>'+
     '<div style="background:linear-gradient(135deg,#1a3f9e,#12306b);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:16px;box-shadow:0 0 14px rgba(60,120,255,.35)">'+
       '<span style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center">'+RC_ICONS.doc+'</span>'+
@@ -1384,6 +1402,11 @@ function receiptCardHTML(c,r){
     '<div style="background:rgba(255,255,255,.04);border-radius:14px;padding:2px 14px;margin:6px 0 10px">'+box.join('')+'</div>'+
     amtRow+wordsBox+placeRow+
     '<div style="text-align:center;margin-top:14px;font-size:12px;color:#9fc1ff">'+L('با اعتماد شما، همیشه در کنار شما هستیم')+'</div>'+
+    '</div>'+
+    '<div style="position:relative;margin-top:18px;display:flex;flex-direction:column;align-items:center">'+
+      rcSkylineSVG(400)+
+      '<div style="margin-top:-34px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.4))">'+rcSealSVG()+'</div>'+
+    '</div>'+
   '</div>';
 }
 var _h2cReady=null;
@@ -1452,116 +1475,4 @@ A.printReceipt=function(){
     });
   });
 };
-function shareSheet(t){
-  openSheet('<h2>'+L('اشتراک‌گذاری حواله')+'</h2><p class="mu">'+L('منوی اشتراک‌گذاری سیستم در این مرورگر باز نشد. متن را کپی کنید و در هر برنامه‌ای که می‌خواهید بفرستید.')+'</p><textarea class="taBox" id="shText" readonly style="direction:'+(db.lang==='en'?'ltr':'rtl')+';text-align:'+(db.lang==='en'?'left':'right')+'">'+esc(t)+'</textarea><div class="btns"><button class="btn pri" data-act="copyShare">'+L('کپی متن حواله')+'</button><button class="btn" data-act="closeSheet">'+L('بستن')+'</button></div>');
-}
-A.copyShare=function(){
-  var r=curRem().r;
-  copyText($('#shText').value).then(function(ok){if(ok){closeSheet();bumpShare(r);toast(L('متن حواله کپی شد'))}else toast(L('کپی نشد؛ متن را انتخاب و دستی کپی کنید'))});
-};
-A.copyExp=function(){copyText($('#expText').value).then(function(ok){toast(L(ok?'متن کپی شد':'کپی نشد؛ متن را انتخاب و دستی کپی کنید'));if(ok){db.lastBackup=nowISO();save()}})};
-
-
-
-/* backup & csv */
-A.backupSheet=function(){
-  var lb=db.lastBackup?L('آخرین پشتیبان: ')+fmtStamp(db.lastBackup):L('هنوز پشتیبان نگرفته‌اید.');
-  openSheet('<h2>'+L('پشتیبان‌گیری و بازیابی')+'</h2><p class="mu">'+lb+'</p><div class="btns"><button class="btn pri" data-act="dlBackup">'+L('دانلود پشتیبان (JSON)')+'</button><button class="btn" data-act="pickRestore">'+L('بازیابی از فایل')+'</button><button class="btn" data-act="pasteRestore">'+L('بازیابی از متن')+'</button><button class="btn" data-act="closeSheet">'+L('بستن')+'</button></div>');
-};
-A.dlBackup=function(){
-  var json=backupJSON();
-  saveFile('hawala-backup-'+stamp()+'.json',json,'application/json').then(function(s){
-    if(s==='saved'){db.lastBackup=nowISO();save();closeSheet();render();toast(L('پشتیبان ذخیره شد'))}
-    else if(s==='fail')textExport('پشتیبان (JSON)',json);
-  });
-};
-A.pickRestore=function(){closeSheet();$('#restoreFile').click()};
-document.addEventListener('change',function(e){
-  if(e.target.id==='restoreFile'){
-    var f=e.target.files&&e.target.files[0];if(!f)return;
-    var rd=new FileReader();
-    rd.onload=function(){tryRestore(String(rd.result))};
-    rd.onerror=function(){toast(L('خواندن فایل ممکن نشد'))};
-    rd.readAsText(f);e.target.value='';
-  }
-});
-A.pasteRestore=function(){
-  openSheet('<h2>'+L('بازیابی از متن')+'</h2><p class="mu">'+L('متن پشتیبان را اینجا جایگذاری کنید.')+'</p><textarea class="taBox" id="pasteBox" data-focus="1"></textarea><div class="btns"><button class="btn pri" data-act="doPaste">'+L('بازیابی')+'</button><button class="btn" data-act="closeSheet">'+L('انصراف')+'</button></div>');
-};
-A.doPaste=function(){var t=$('#pasteBox').value.trim();if(!t){toast(L('متنی جایگذاری نشده'));return}tryRestore(t)};
-A.csvAll=function(){closeSheet();exportCsv(db.companies,'all')};
-A.csvOne=function(){var c=co(stack[stack.length-1].id);exportCsv([c],safeName(c.name))};
-
-/* report */
-A.report=function(){go('report',{cid:stack[stack.length-1].id})};
-A.printRep=function(){try{window.print()}catch(e){toast(L('چاپ در این مرورگر ممکن نیست؛ «دانلود گزارش» را بزنید'))}};
-A.dlRep=function(){
-  var c=co(stack[stack.length-1].cid);
-  var html='<!DOCTYPE html><html lang="'+(db.lang==='en'?'en':'fa')+'" dir="'+(db.lang==='en'?'ltr':'rtl')+'"><head><meta charset="utf-8"><title>'+L('گزارش')+' '+esc(c.name)+'</title><style>:root{--tx:#111;--mu:#555;--bd:#bbb;--s2:#f2f2f2}body{font-family:Vazirmatn,Tahoma,sans-serif;margin:24px;color:#111}'+REPORT_CSS+'</style></head><body>'+reportHTML(c)+'</body></html>';
-  saveFile('hawala-report-'+safeName(c.name)+'-'+stamp()+'.html',html,'text/html').then(function(s){
-    if(s==='saved')toast(L('گزارش ذخیره شد؛ آن را باز کنید و چاپ یا PDF بگیرید'));else if(s==='fail')toast(L('ذخیرهٔ گزارش ممکن نشد'));
-  });
-};
-
-/* closing a month */
-A.closeMonth=function(){
-  var c=co(stack[stack.length-1].id),j=jToday();
-  var mo=MONTHS.map(function(m,i){return '<option value="'+(i+1)+'"'+(i+1===j[1]?' selected':'')+'>'+m+'</option>'}).join('');
-  var yo='';for(var y=j[0]+1;y>=j[0]-3;y--)yo+='<option value="'+y+'"'+(y===j[0]?' selected':'')+'>'+D(y)+'</option>';
-  function monthSummary(){
-    var m=Number($('#cm_m').value),y=Number($('#cm_y').value);
-    function inMonth(r){var g=r.date.split('-').map(Number),jj=g2j(g[0],g[1],g[2]);return jj[0]===y&&jj[1]===m}
-    var r=calc(c.read.filter(inMonth)),p=calc(c.paid.filter(inMonth)),diff=r.total-p.total;return {r:r,p:p,diff:diff,st:statusOf(diff)};
-  }
-  openSheet('<h2>'+L('بستن حساب ماه')+'</h2><p class="mu">'+L('وضعیت همین ماه ذخیره می‌شود. حواله‌ها حذف نمی‌شوند و حساب جاری ادامه پیدا می‌کند.')+'</p>'+
-    '<div class="field" id="fld_cm"><label>'+L('کدام ماه بسته شود؟')+'</label><div class="three" style="grid-template-columns:1.6fr 1.2fr"><select id="cm_m" aria-label="'+(db.lang==='en'?'Month':'ماه')+'">'+mo+'</select><select id="cm_y" aria-label="'+(db.lang==='en'?'Year':'سال')+'">'+yo+'</select></div><div class="msg" id="msg_cm" hidden></div></div>'+
-    '<div class="card" id="cm_preview" style="background:var(--s2)"></div>'+
-    '<div class="btns"><button class="btn pri" data-act="doClose">'+L('بستن ماه')+'</button><button class="btn" data-act="closeSheet">'+L('انصراف')+'</button></div>');
-  function paint(){var s=monthSummary();var el=$('#cm_preview');if(!el)return;el.innerHTML='<div class="lr" style="display:flex;justify-content:space-between"><span>'+L('جمع خوانده‌گی')+'</span><b>'+money(s.r.total)+'</b></div><div style="display:flex;justify-content:space-between"><span>'+L('جمع پرداختی')+'</span><b>'+money(s.p.total)+'</b></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px"><span>'+L('وضعیت')+'</span><span>'+pill(s.st)+' '+(s.diff?'<b>'+money(Math.abs(s.diff))+'</b>':'')+'</span></div>'}
-  paint();
-  ['cm_m','cm_y'].forEach(function(id){var el=$('#'+id);if(el)el.addEventListener('change',paint)});
-};
-A.doClose=function(){
-  clearErrs();
-  var c=co(stack[stack.length-1].id),m=Number($('#cm_m').value),y=Number($('#cm_y').value);
-  if(c.closed.some(function(x){return x.jy===y&&x.jm===m})){showErr('cm',L('این ماه قبلاً بسته شده است. ماه دیگری را انتخاب کنید یا آن را از تاریخچه حذف کنید'));return}
-  function inMonth(r){var g=r.date.split('-').map(Number),j=g2j(g[0],g[1],g[2]);return j[0]===y&&j[1]===m}
-  var pr=c.read.filter(inMonth),pp=c.paid.filter(inMonth);
-  var rt=calc(pr),pt=calc(pp),diff=rt.total-pt.total,closedAt=nowISO();
-  var it={id:uid(),jy:y,jm:m,label:MONTHS[m-1]+' '+y,closedAt:closedAt,updatedAt:closedAt,
-    readCount:rt.count,readTotal:rt.total,paidCount:pt.count,paidTotal:pt.total,diff:diff,status:statusOf(diff),
-    moveReadTotal:rt.total,movePaidTotal:pt.total,readList:JSON.parse(JSON.stringify(pr)),paidList:JSON.parse(JSON.stringify(pp))};
-  c.closed.unshift(it);clearCloudDeleted('closed',c.id,it.id);
-  save();closeSheet();render();toast(L('ماه ')+MONTHS[m-1]+' '+D(y)+L(' بسته شد'));
-};
-A.delClosed=function(el){
-  var cur=stack[stack.length-1],c=co(cur.cid),id=el.dataset.id;
-  confirmSheet({title:'حذف از تاریخچه',msg:L('فقط ثبت این ماه از تاریخچه پاک می‌شود. حواله‌های حساب دست نمی‌خورند.'),ok:'حذف',danger:true},function(){
-    markCloudDeleted('closed',cur.cid,id);c.closed=c.closed.filter(function(x){return x.id!==id});save();stack.pop();render();toast(L('از تاریخچه حذف شد'));
-  });
-};
-
-/* global click and keys */
-document.addEventListener('click',function(e){
-  var el=e.target.closest('[data-act]');if(!el)return;
-  var f=A[el.dataset.act];if(!f)return;
-  if(el.classList.contains('mi'))closeSheet();
-  f(el,e);
-});
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});
-
-if(!storageOk)setTimeout(function(){toast('ذخیره‌سازی مرورگر فعال نیست؛ پشتیبان بگیرید')},600);
-render();
-if(cloudEnabled())initCloud();
-if(loadLockCfg().enabled)showLockGate();
-})();
-</script>
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load',function(){
-    navigator.serviceWorker.register('./sw.js').catch(function(){});
-  });
-}
-</script>
-</body>
-</html>
+funct
