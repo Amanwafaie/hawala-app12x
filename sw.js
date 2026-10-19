@@ -1,4 +1,4 @@
-var CACHE='hawala-shell-v2';
+var CACHE='hawala-shell-v3';
 var BASE=self.location.href.replace(/sw\.js(\?.*)?$/,'');
 var SELF_URL=BASE+'hawala-web.html';
 var FB='https://www.gstatic.com/firebasejs/8.10.1/';
@@ -13,6 +13,8 @@ self.addEventListener('install',function(e){
   e.waitUntil(
     caches.open(CACHE).then(function(c){
       return c.add(SELF_URL).then(function(){
+        return Promise.all(['manifest.webmanifest','icon-192.png','icon-512.png'].map(function(f){return c.add(BASE+f).catch(function(){})}));
+      }).then(function(){
         return Promise.all(EXTRA.map(function(u){
           return fetch(new Request(u,{mode:'no-cors'})).then(function(r){return c.put(u,r)}).catch(function(){});
         }));
