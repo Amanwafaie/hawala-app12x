@@ -1,4 +1,4 @@
-var CACHE='hawala-shell-v4';
+var CACHE='hawala-shell-v6';
 var BASE=self.location.href.replace(/sw\.js(\?.*)?$/,'');
 var SELF_URL=BASE+'hawala-web.html';
 var FB='https://www.gstatic.com/firebasejs/8.10.1/';
