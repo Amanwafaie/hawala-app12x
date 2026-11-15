@@ -136,6 +136,23 @@ button.card{width:100%;text-align:start}
 .rno{font-weight:700;color:var(--mu)}
 .ramt{font-weight:700;font-size:18px}
 .rem-mid{font-size:14px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rem-mid .pl{color:var(--mu);font-size:12px}
+.rem-by{text-align:center;font-size:12px;color:var(--mu);margin-top:6px;direction:ltr;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pgwrap{position:fixed;left:0;right:0;top:0;height:100vh;overflow:hidden;background:var(--bg);z-index:40;pointer-events:none;will-change:transform;box-shadow:0 0 24px rgba(0,0,0,.4)}
+.pgwrap .app{min-height:100vh}
+html.navanim{overflow-x:hidden}
+html.navanim body{overflow-x:hidden}
+@keyframes pgin{from{transform:translateX(calc(var(--sg,1)*100%))}to{transform:none}}
+#app.pgin{animation:pgin .26s ease both}
+.pw{position:relative}
+.pw input{padding-left:50px}
+.pbtn{position:absolute;left:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:10px;border:1px solid var(--bd);background:var(--s1,var(--s2));color:var(--mu);display:flex;align-items:center;justify-content:center;padding:0}
+.pdrop{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;max-height:168px;overflow:auto;background:var(--s2);border:1px solid var(--bd);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.pit{display:block;width:100%;text-align:start;padding:9px 12px;font-size:14px;border:0;border-bottom:1px solid var(--bd);background:none;color:inherit}
+.pit:last-child{border-bottom:0}
+.pem{padding:10px 12px;font-size:13px;color:var(--mu)}
+.arow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-bottom:1px solid var(--bd);font-size:14px}
+.adel{border:0;background:none;color:var(--bad);font-size:16px;padding:4px 8px}
 .rem-bot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;font-size:13px;color:var(--mu);flex-wrap:wrap}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 
@@ -196,6 +213,16 @@ button.card{width:100%;text-align:start}
 .tabs button.on{color:var(--ac);border-bottom-color:var(--ac);font-weight:700}
 .fab{position:fixed;left:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:15;width:60px;height:60px;border-radius:50%;border:0;background:var(--ac);color:var(--acx);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.45)}
 .fab svg{width:28px;height:28px}
+.sumbar.vs{display:block;padding:14px 18px;text-align:start}
+.sumbar.vs .sb1,.sumbar.vs .sb2{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sumbar.vs .sb1 small,.sumbar.vs .sb2 small{display:block}
+.sumbar.vs .sb1 b{font-size:26px;line-height:1.35;text-align:end}
+.sumbar.vs .sb2 b{text-align:end}
+.sumbar.vs>*{border-radius:0;background:none;padding:0}
+.sumbar.vs .sb2{margin-top:12px;padding-top:10px;border-top:1px solid var(--bd)}
+.sumbar.vs .sb2 small{font-size:11.5px}
+.sumbar.vs .sb2 b{font-size:14px;font-weight:600}
+#rlist{padding-bottom:96px}
 .psum{padding:18px 16px}
 .psum .lbl{color:var(--mu);font-size:13px}
 .psum .main{font-size:32px;font-weight:700;margin:2px 0 14px;line-height:1.3}
@@ -240,10 +267,18 @@ html[data-theme=gray] .card{box-shadow:0 1px 2px rgba(30,32,48,.05),0 8px 22px -
 .sheet::before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:var(--bd);margin:-6px auto 12px}
 .sheet h2{font-size:18px;font-weight:700}
 /* three-dots menu slides in from the right */
-@keyframes inR{from{transform:translateX(100%)}to{transform:none}}
+@keyframes inL{from{transform:translateX(-100%)}to{transform:none}}
 .sheet-wrap.side{align-items:stretch}
-.sheet-wrap.side .sheet{position:absolute;top:0;bottom:0;right:0;left:auto;width:min(88vw,380px);max-width:none;max-height:none;border-radius:26px 0 0 26px;border:1px solid var(--bd);border-right:0;box-shadow:-20px 0 50px -20px rgba(0,0,0,.6);padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));animation:inR .2s ease-out}
+.sheet-wrap.side .sheet{position:absolute;top:0;bottom:0;left:0;right:auto;width:min(88vw,380px);max-width:none;max-height:none;border-radius:0 26px 26px 0;border:1px solid var(--bd);border-left:0;box-shadow:20px 0 50px -20px rgba(0,0,0,.6);padding:calc(18px + env(safe-area-inset-top,0px)) 16px calc(18px + env(safe-area-inset-bottom,0px));animation:inL .2s ease-out}
 .sheet-wrap.side .sheet::before{display:none}
+.sheet{position:relative}
+html,body{overscroll-behavior-y:contain}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,select,[contenteditable=true]{-webkit-user-select:text;user-select:text}
+.sheet-wrap.side .sheet{position:absolute}
+.sx{position:absolute;top:10px;inset-inline-end:12px;width:36px;height:36px;border-radius:50%;border:0;background:var(--s2,rgba(255,255,255,.08));color:var(--mu);font-size:24px;line-height:1;display:grid;place-items:center;padding:0 0 3px;z-index:2}
+.sx:active{transform:scale(.92)}
+.sheet h2{padding-inline-end:44px}
 .tabs{border-bottom-color:color-mix(in srgb,var(--bd) 80%,transparent)}
 .tabs button{font-size:13px;letter-spacing:0;transition:color .15s}
 .tabs button.on{font-weight:700}
@@ -363,9 +398,30 @@ html:is([data-theme=waves],[data-theme=mountains],[data-theme=topo],[data-theme=
 .kt .kc svg{width:16px;height:16px}
 .kt.read .kh{color:var(--ok)}.kt.read .kc{background:var(--okbg)}
 .kt.paid .kh{color:var(--bad)}.kt.paid .kc{background:var(--badbg)}
-.kt .kn{color:var(--mu);font-size:12.5px}
+.kt .kn{color:var(--mu);font-size:14px}
 .kt .kv{font-size:19px;font-weight:700;margin-top:2px}
+/* company page: read and paid stacked, one under the other */
+.duo2{grid-template-columns:1fr;gap:10px}
+.kt{grid-template-columns:1fr auto;grid-template-areas:"kh kv" "kn kv";align-items:center;column-gap:12px;row-gap:4px;padding:14px 16px}
+.kt .kh{grid-area:kh}.kt .kn{grid-area:kn}
+.kt .kv{grid-area:kv;font-size:24px;margin:0;text-align:end}
+/* personal account page: remaining / added / withdrawn stacked, names right, amounts left */
+.psum.stk{text-align:start;padding:4px 18px 16px}
+.psum.stk .prow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 0}
+.psum.stk .prow.rem{border-bottom:0}
+.psum.stk .main{font-size:28px;margin:0;line-height:1.3;font-weight:800;text-align:end}
+.psum.stk .lbl{font-size:15px;font-weight:700;color:var(--tx)}
+.psum.stk .two{display:block}
+.psum.stk .two::before{display:none}
+.psum.stk .tile{display:flex;padding:15px 0;border-radius:0}
+.psum.stk .tile.in{border-bottom:1px solid var(--bd);grid-column:auto;grid-row:auto}
+.psum.stk .tile.out{grid-column:auto;grid-row:auto;border-bottom:1px solid var(--bd)}
+.psum.stk .tile small{justify-content:flex-start;font-size:15px;font-weight:700}
+.psum.stk .tile b{display:block;margin:0;font-size:22px;text-align:end}
+.psum.stk .pbar{margin:6px 0 0;max-width:none}
+.psum.stk .pcap{margin-top:8px;text-align:start}
 .csum + .duo2 + .card.trend,.card.trend{margin-top:0}
+.ledger+.card.trend{margin-top:12px}
 </style>
 </head>
 <body>
@@ -563,7 +619,7 @@ var T={
 'خوانده‌گی این دوره':'Received this period','پرداختی این دوره':'Paid this period',
 'حواله‌های خوانده‌گی این دوره':'Received remittances this period','حواله‌های پرداختی این دوره':'Paid remittances this period',
 'موردی نبود.':'None.',
-'تأیید هویت':'Verify Identity','پشتیبان، خروجی و گزارش':'Backup, Export & Reports','تأیید هویت هنگام کار':'Verify when working','محافظت از اطلاعات':'Protect data','دیدن و مرور ماه‌های بسته‌شده':'Browse closed months','قفل برنامه':'App Lock',
+'کل اضافه‌شده':'Total added','کل برداشت‌شده':'Total withdrawn','تأیید هویت':'Verify Identity','پشتیبان، خروجی و گزارش':'Backup, Export & Reports','تأیید هویت هنگام کار':'Verify when working','محافظت از اطلاعات':'Protect data','دیدن و مرور ماه‌های بسته‌شده':'Browse closed months','قفل برنامه':'App Lock',
 'برای محافظت از اطلاعات، می‌توانید هنگام باز شدن برنامه قفل بخواهید — با اثر انگشت/قفل گوشی یا با یک رمز عبور داخل برنامه.':'For protection, you can require a lock when the app opens — using your phone\'s fingerprint/screen lock, or an in-app PIN.',
 'غیرفعال':'Off','اثر انگشت یا قفل گوشی':'Fingerprint / device lock','رمز عبور داخل برنامه (PIN)':'In-app PIN',
 'این گوشی از قفل اثر انگشت/گوشی پشتیبانی نمی‌کند؛ به‌جایش از رمز داخل برنامه استفاده کنید.':'This device does not support fingerprint/device lock; use the in-app PIN instead.',
@@ -614,7 +670,7 @@ function fmtStamp(iso){
 function norm(s){return toLatin(s).toLowerCase().trim()}
 
 /* ---------- data ---------- */
-function blank(){return {v:2,theme:'night',digits:'fa',dateFmt:'jalali',lang:'fa',lastBackup:'',debtThreshold:500000,inactiveDays:30,settingsUpdatedAt:'',cloudDeleted:[],companies:[],personal:[]}}
+function blank(){return {v:2,theme:'night',digits:'fa',dateFmt:'jalali',lang:'fa',lastBackup:'',debtThreshold:500000,inactiveDays:30,settingsUpdatedAt:'',addrs:[],cloudDeleted:[],companies:[],personal:[]}}
 function cleanList(a){
   return (Array.isArray(a)?a:[]).filter(function(r){return r&&typeof r==='object'}).map(function(r){
     var dt=/^\d{4}-\d{2}-\d{2}$/.test(r.date)?r.date:todayISO();
@@ -658,6 +714,15 @@ function cleanTx(a){
     };
   });
 }
+function cleanAddrs(a){
+  var seen={},o=[];
+  (Array.isArray(a)?a:[]).forEach(function(x){
+    var n=String(x&&x.n!=null?x.n:'').trim().slice(0,100),k=n.toLowerCase();
+    if(!n||seen[k]||o.length>=200)return;
+    seen[k]=1;o.push({n:n,c:Math.max(0,Math.floor(Number(x.c))||0)});
+  });
+  return o;
+}
 function sanitize(d){
   var out=blank();
   if(d&&THEMES[d.theme])out.theme=d.theme;
@@ -668,6 +733,7 @@ function sanitize(d){
   if(d&&d.lang==='en')out.lang='en';
   if(d&&typeof d.lastBackup==='string')out.lastBackup=d.lastBackup;
   if(d&&typeof d.settingsUpdatedAt==='string')out.settingsUpdatedAt=d.settingsUpdatedAt;
+  out.addrs=cleanAddrs(d&&d.addrs);
   if(Array.isArray(d&&d.cloudDeleted))out.cloudDeleted=d.cloudDeleted.filter(function(x){return x&&x.k&&x.u}).map(function(x){return {k:String(x.k),t:String(x.t||''),c:String(x.c||''),i:String(x.i||''),u:String(x.u)}});
   (Array.isArray(d&&d.companies)?d.companies:[]).forEach(function(c){
     if(!c||typeof c.name!=='string')return;
@@ -705,11 +771,18 @@ function pa(id){return (db.personal||[]).find(function(a){return a.id===id})}
 
 /* ---------- cloud sync (optional, Firebase) ---------- */
 var FB_KEY='hawala_fb_cfg';
+var FB_OFF_KEY='hawala_fb_off';
+var FB_DEFAULT={apiKey:'AIzaSyD8uvMVCeVw_S4JjcpQkpkBU4Lb5iiMrMw',authDomain:'hawala-app-82e63.firebaseapp.com',projectId:'hawala-app-82e63',appId:'1:59007396484:web:772319cce1b26e8da9b0d1'};
 var fb={app:null,auth:null,db:null,user:null,unsub:null};
 var applyingRemote=false;
-function loadFbConfig(){try{return JSON.parse(localStorage.getItem(FB_KEY)||'null')}catch(e){return null}}
-function saveFbConfig(cfg){try{localStorage.setItem(FB_KEY,JSON.stringify(cfg))}catch(e){}}
-function clearFbConfig(){try{localStorage.removeItem(FB_KEY)}catch(e){}}
+function loadFbConfig(){
+  var c=null;try{c=JSON.parse(localStorage.getItem(FB_KEY)||'null')}catch(e){}
+  if(c)return c;
+  try{if(localStorage.getItem(FB_OFF_KEY)==='1')return null}catch(e){}
+  return FB_DEFAULT;
+}
+function saveFbConfig(cfg){try{localStorage.setItem(FB_KEY,JSON.stringify(cfg));localStorage.removeItem(FB_OFF_KEY)}catch(e){}}
+function clearFbConfig(){try{localStorage.removeItem(FB_KEY);localStorage.setItem(FB_OFF_KEY,'1')}catch(e){}}
 function cloudEnabled(){return !!loadFbConfig()}
 function cloudStatusText(){return fb.user?('وارد شده: '+fb.user.email):'در انتظار ورود'}
 function currentUserLabel(){return fb.user?fb.user.email.split('@')[0]:''}
@@ -736,7 +809,7 @@ function clearCloudDeleted(t,c,i){var k=entKey(t,c||'',i);db.cloudDeleted=(db.cl
 function tombOf(k){return (db.cloudDeleted||[]).find(function(x){return x.k===k})||null}
 function allEntities(d,withSettings){
   var m={};
-  if(withSettings)m[entKey('settings','','s')]={t:'settings',c:'',i:'s',u:d.settingsUpdatedAt||'',data:{debtThreshold:d.debtThreshold,inactiveDays:d.inactiveDays}};
+  if(withSettings)m[entKey('settings','','s')]={t:'settings',c:'',i:'s',u:d.settingsUpdatedAt||'',data:{debtThreshold:d.debtThreshold,inactiveDays:d.inactiveDays,addrs:d.addrs||[]}};
   d.companies.forEach(function(c){
     m[entKey('company','',c.id)]={t:'company',c:'',i:c.id,u:tsOf(c),data:{id:c.id,name:c.name,note:c.note,pinned:!!c.pinned,createdAt:c.createdAt}};
     ['read','paid'].forEach(function(k){c[k].forEach(function(r){m[entKey(k,c.id,r.id)]={t:k,c:c.id,i:r.id,u:tsOf(r),data:r}})});
@@ -846,6 +919,7 @@ function applyEntity(e){
       var x=e.d||{};
       if(Number(x.debtThreshold)>0)db.debtThreshold=Math.floor(Number(x.debtThreshold));
       if(Number(x.inactiveDays)>0)db.inactiveDays=Math.floor(Number(x.inactiveDays));
+      if(Array.isArray(x.addrs))db.addrs=cleanAddrs(x.addrs);
       db.settingsUpdatedAt=e.u;return true;
     }
     return false;
@@ -1047,6 +1121,11 @@ function openSheet(html){
   sheetEl.className='sheet-wrap no-print';
   sheetEl.setAttribute('data-act','sheetBg');
   sheetEl.innerHTML='<div class="sheet" role="dialog" aria-modal="true">'+html+'</div>';
+  Array.prototype.forEach.call(sheetEl.querySelectorAll('[data-act=closeSheet]'),function(b){
+    if(b.textContent.trim()===L('بستن')){var p=b.parentNode;b.remove();if(p&&p.classList.contains('btns')&&!p.children.length)p.remove()}
+  });
+  var shx=document.createElement('button');shx.type='button';shx.className='sx';shx.setAttribute('data-act','closeSheet');shx.setAttribute('aria-label',L('بستن'));shx.textContent='×';
+  sheetEl.querySelector('.sheet').insertBefore(shx,sheetEl.querySelector('.sheet').firstChild);
   document.body.appendChild(sheetEl);
   var f=sheetEl.querySelector('[data-focus]');if(f)setTimeout(function(){f.focus()},50);
 }
@@ -1108,7 +1187,18 @@ function openMenu(items,title){
     }).join('')+'</div>';
   }).join('');
   openSheet(h);
-  if(sheetEl)sheetEl.classList.add('side');
+  if(sheetEl){
+    sheetEl.classList.add('side');
+    (function(el){
+      var sh=el.querySelector('.sheet'),x0=null,y0=0,dx=0;
+      sh.addEventListener('touchstart',function(e){var t=e.touches[0];x0=t.clientX;y0=t.clientY;dx=0;sh.style.animation='none';sh.style.transition='none'},{passive:true});
+      sh.addEventListener('touchmove',function(e){if(x0===null)return;var t=e.touches[0];dx=t.clientX-x0;if(dx<0&&Math.abs(dx)>Math.abs(t.clientY-y0))sh.style.transform='translateX('+dx+'px)'},{passive:true});
+      sh.addEventListener('touchend',function(){
+        if(x0===null)return;x0=null;sh.style.transition='transform .18s ease-out';
+        if(dx<-70){sh.style.transform='translateX(-105%)';setTimeout(function(){if(sheetEl===el)closeSheet()},170)}else sh.style.transform='';
+      });
+    })(sheetEl);
+  }
 }
 var CK='<svg class="ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
 function srow(act,attrs,ic,title,sub,o){
@@ -1117,7 +1207,66 @@ function srow(act,attrs,ic,title,sub,o){
   return '<button class="sr'+(o.d?' dng':'')+(o.on?' on':'')+'" data-act="'+act+'"'+(attrs||'')+'>'+icon+'<span class="st"><b>'+esc(L(title))+'</b>'+(sub?'<small>'+esc(L(sub))+'</small>':'')+'</span>'+(o.on?CK:'')+'</button>';
 }
 function sgrp(rows,label){return (label?'<div class="sl">'+esc(L(label))+'</div>':'')+'<div class="sgrp">'+rows.join('')+'</div>'}
-function go(v,p){stack.push(Object.assign({v:v},p||{}));render();window.scrollTo(0,0)}
+function go(v,p){stack.push(Object.assign({v:v},p||{}));render();window.scrollTo(0,0);navIn()}
+/* page transitions: forward slides in, back slides out, and the page can be dragged back */
+var NAVMS=260,navBusy=false;
+function sgn(){return document.documentElement.dir==='rtl'?-1:1}
+function navReduced(){try{return window.matchMedia('(prefers-reduced-motion:reduce)').matches}catch(e){return false}}
+function navIn(){
+  if(navReduced())return;
+  var h=document.documentElement;h.classList.add('navanim');
+  app.style.setProperty('--sg',sgn());app.classList.remove('pgin');void app.offsetWidth;app.classList.add('pgin');
+  setTimeout(function(){app.classList.remove('pgin');h.classList.remove('navanim')},NAVMS+60);
+}
+function navTakeOut(){
+  var w=document.createElement('div');w.className='pgwrap no-print';
+  var a=document.createElement('div');a.className='app';a.style.transform='translateY('+(-window.scrollY)+'px)';
+  while(app.firstChild)a.appendChild(app.firstChild);
+  w.appendChild(a);document.body.appendChild(w);document.documentElement.classList.add('navanim');return w;
+}
+function navSlideOut(w){
+  w.style.transition='transform '+NAVMS+'ms ease';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){w.style.transform='translateX('+(sgn()*100)+'%)'})});
+  setTimeout(function(){w.remove();if(!document.querySelector('.pgwrap'))document.documentElement.classList.remove('navanim')},NAVMS+40);
+}
+function navBack(){
+  if(stack.length<=1||navBusy)return;
+  if(navReduced()){back();return}
+  var w=navTakeOut();stack.pop();render();window.scrollTo(0,0);navSlideOut(w);
+}
+var navDrag=null;
+function navOk(t){return stack.length>1&&!navBusy&&!sheetEl&&!document.getElementById('lockGate')&&!document.getElementById('encGate')&&!document.getElementById('loginGate')&&!t.closest('input,textarea,select,.pw')}
+document.addEventListener('touchstart',function(e){
+  if(e.touches.length!==1||!navOk(e.target)){navDrag=null;return}
+  navDrag={x:e.touches[0].clientX,y:e.touches[0].clientY,t0:Date.now(),on:false,m:0};
+},{passive:true});
+document.addEventListener('touchmove',function(e){
+  var d=navDrag;if(!d||e.touches.length!==1)return;
+  var dx=e.touches[0].clientX-d.x,dy=e.touches[0].clientY-d.y;
+  if(!d.on){
+    if(Math.abs(dy)>12&&Math.abs(dy)>Math.abs(dx)*0.8){navDrag=null;return}
+    if(Math.abs(dx)<=12)return;
+    if(dx*sgn()<0||Math.abs(dx)<=Math.abs(dy)*1.5){navDrag=null;return}
+    if(navReduced()){navDrag=null;return}
+    d.on=true;d.sy=window.scrollY;d.w=navTakeOut();d.w.style.transition='none';d.saved=stack.pop();render();window.scrollTo(0,0);
+  }
+  e.preventDefault();
+  var m=Math.max(0,Math.min(Math.abs(dx),window.innerWidth));d.m=m;
+  d.w.style.transform='translateX('+(sgn()*m)+'px)';
+},{passive:false});
+function navDragEnd(){
+  var d=navDrag;navDrag=null;if(!d||!d.on)return;
+  var fast=d.m/Math.max(1,Date.now()-d.t0)>0.5&&d.m>40;
+  if(d.m>window.innerWidth*0.4||fast){navSlideOut(d.w);return}
+  navBusy=true;var w=d.w;w.style.transition='transform '+NAVMS+'ms ease';w.style.transform='translateX(0)';
+  setTimeout(function(){
+    stack.push(d.saved);
+    app.innerHTML='';var a=w.firstChild;while(a.firstChild)app.appendChild(a.firstChild);
+    w.remove();document.documentElement.classList.remove('navanim');window.scrollTo(0,d.sy);navBusy=false;
+  },NAVMS+30);
+}
+document.addEventListener('touchend',navDragEnd);
+document.addEventListener('touchcancel',navDragEnd);
 function back(){if(stack.length>1)stack.pop();render();window.scrollTo(0,0)}
 function header(title,o){
   o=o||{};
@@ -1138,6 +1287,14 @@ function field(id,label,val,o){
     (o.area?'<textarea id="'+id+'">'+esc(val)+'</textarea>':
     '<input id="'+id+'" type="text" value="'+esc(val)+'"'+(o.ltr?' dir="ltr"':'')+(o.num?' inputmode="numeric"':'')+(o.amt?' data-amt="1"':'')+(o.ro?' readonly':'')+' autocomplete="off">')+
     '<div class="msg" id="msg_'+id+'" hidden></div></div>';
+}
+function addrSorted(){return db.addrs.slice().sort(function(a,b){return b.c-a.c||a.n.localeCompare(b.n)})}
+function placeField(val){
+  return '<div class="field" id="fld_f_place"><label for="f_place">'+esc(L('محل پرداخت'))+'</label><div class="pw"><input id="f_place" type="text" value="'+esc(val)+'" autocomplete="off"><button type="button" class="pbtn" data-act="addrDrop" aria-label="'+esc(L('آدرس‌های ثبت‌شده'))+'"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></button><div class="pdrop" id="pdrop" hidden></div></div><div class="msg" id="msg_f_place" hidden></div></div>';
+}
+function addrUsed(place){
+  var k=String(place||'').trim().toLowerCase(),a=db.addrs.find(function(x){return x.n.toLowerCase()===k});
+  if(a){a.c++;db.settingsUpdatedAt=nowISO()}
 }
 function copyText(t){
   return (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(function(){return true},function(){
@@ -1272,9 +1429,9 @@ V.pers=function(p){
     rows+='</div>';
   }else rows='<div class="empty"><b>'+L('هنوز تراکنشی ثبت نشده')+'</b></div>';
   return header(a.name,{back:true,actions:[menuBtn('persMenu')]})+
-  '<main><section class="card psum"><div class="lbl">'+L('مبلغ باقی‌مانده')+' ('+L('افغانی')+')</div><div class="main">'+balHTML(bal)+'</div>'+
+  '<main><section class="card psum stk"><div class="two"><div class="prow tile in"><small>'+I.inn+' '+L('کل اضافه‌شده')+'</small><b>'+money(t.add)+'</b></div><div class="prow tile out"><small>'+I.out+' '+L('کل برداشت‌شده')+'</small><b>'+money(t.sub)+'</b></div></div>'+
+    '<div class="prow rem"><span class="lbl">'+L('مبلغ باقی‌مانده')+' ('+L('افغانی')+')</span><span class="main">'+balHTML(bal)+'</span></div>'+
     (t.add?'<div class="pbar"><i style="width:'+pct+'%"></i></div>':'')+
-    '<div class="two"><div class="tile in"><small>'+I.inn+' '+L('اضافه‌شده')+'</small><b>'+money(t.add)+'</b></div><div class="tile out"><small>'+I.out+' '+L('برداشت‌شده')+'</small><b>'+money(t.sub)+'</b></div></div>'+
     (t.add?'<div class="pcap">'+D(pct)+'٪ '+L('از مبلغ اضافه‌شده برداشت شده')+'</div>':'')+'</section>'+
   '<div class="qa no-print"><button class="qb in" data-act="persAdd"><span class="qc in">'+I.plus+'</span><b>'+L('اضافه کردن')+'</b></button><button class="qb out" data-act="persSub"><span class="qc out">'+I.out+'</span><b>'+L('برداشت')+'</b></button></div>'+
   '<div class="gsec">'+L('تراکنش‌ها')+(a.tx.length?' · '+D(a.tx.length):'')+'</div>'+rows+'</main>';
@@ -1287,8 +1444,8 @@ V.company=function(p){
   return header(c.name,{back:true,actions:[menuBtn('coMenu')]})+
   '<main>'+
   '<div class="duo2">'+
-    '<button class="card kt read" data-act="openList" data-kind="read"><span class="kh"><span class="kc">'+I.inn+'</span>'+KL('read')+'</span><span class="kn">'+D(s.r.count)+' '+L('حواله')+' · '+L('جمع خوانده‌گی')+'</span><span class="kv">'+money(s.r.total)+'</span></button>'+
-    '<button class="card kt paid" data-act="openList" data-kind="paid"><span class="kh"><span class="kc">'+I.out+'</span>'+KL('paid')+'</span><span class="kn">'+D(s.p.count)+' '+L('حواله')+' · '+L('جمع پرداختی')+'</span><span class="kv">'+money(s.p.total)+'</span></button>'+
+    '<button class="card kt read" data-act="openList" data-kind="read"><span class="kh"><span class="kc">'+I.inn+'</span>'+KL('read')+'</span><span class="kn">'+D(s.r.count)+' '+L('حواله')+'</span><span class="kv">'+money(s.r.total)+'</span></button>'+
+    '<button class="card kt paid" data-act="openList" data-kind="paid"><span class="kh"><span class="kc">'+I.out+'</span>'+KL('paid')+'</span><span class="kn">'+D(s.p.count)+' '+L('حواله')+'</span><span class="kv">'+money(s.p.total)+'</span></button>'+
   '</div>'+
   '<section class="card ledger" style="margin-top:12px"><div class="lr"><span>'+L('جمع خوانده‌گی')+'</span><b>'+money(s.r.total)+'</b></div><div class="lr"><span>'+L('جمع پرداختی')+'</span><b>'+money(s.p.total)+'</b></div><div class="rule"></div>'+
     '<div class="net"><span>'+L('تفاوت (افغانی)')+'</span><b>'+money(Math.abs(s.diff))+'</b>'+pill(s.st)+'</div><div class="why">'+why+'</div></section>'+
@@ -1301,8 +1458,8 @@ V.company=function(p){
 function remRows(list){
   return list.length?list.slice().sort(byNew).map(function(r){
     return '<button class="card rem" data-act="openRem" data-id="'+r.id+'"><div class="rem-top"><span class="rno">'+L('شماره')+' '+D(r.no)+'</span><span class="ramt">'+money(r.amount)+'</span></div>'+
-      '<div class="rem-mid">'+esc(r.receiver)+'</div>'+
-      '<div class="rem-bot"><span>'+fmtDate(r.date)+'</span><span class="chips">'+(r.createdBy?'<span class="chip">'+L('ثبت‌شده توسط')+': '+esc(r.createdBy)+'</span>':'')+(r.edited?'<span class="chip">'+L('ویرایش‌شده')+'</span>':'')+'<span class="chip">'+D(r.shares)+' '+L('بار ارسال')+'</span></span></div></button>';
+      '<div class="rem-mid"><span class="pl">'+L('فرستنده')+':</span> '+esc(r.sender)+'</div><div class="rem-mid"><span class="pl">'+L('گیرنده')+':</span> '+esc(r.receiver)+'</div>'+(r.createdBy?'<div class="rem-by">'+esc(r.createdBy)+'</div>':'')+
+      '<div class="rem-bot"><span>'+fmtDate(r.date)+'</span><span class="chips">'+(r.edited?'<span class="chip">'+L('ویرایش‌شده')+'</span>':'')+'<span class="chip">'+D(r.shares)+' '+L('بار ارسال')+'</span></span></div></button>';
   }).join(''):'<div class="empty"><b>'+L('حواله‌ای پیدا نشد')+'</b>'+L('عبارت دیگری را جستجو کنید.')+'</div>';
 }
 V.list=function(p){
@@ -1310,10 +1467,10 @@ V.list=function(p){
   var q=ui.listSearchOpen?ui.listQ:'';
   var list=q?full.filter(function(r){return norm(r.sender+' '+r.receiver+' '+r.no+' '+r.place+' '+r.notes+' '+r.fatherName).indexOf(norm(q))>-1}):full;
   return header((db.lang==='en'?'Remittances — ':'حواله‌های ')+KL(p.kind),{back:true,actions:['<button class="ib" data-act="toggleListSearch" aria-label="'+L('جستجو')+'">'+I.search+'</button>']})+
-  '<main><div class="card sumbar"><div><small>'+L('تعداد')+'</small><b>'+D(t.count)+'</b></div><div><small>'+L('جمع مبلغ (افغانی)')+'</small><b>'+money(t.total)+'</b></div></div>'+
+  '<main><div class="card sumbar vs"><div class="sb1"><small>'+L('جمع مبلغ (افغانی)')+'</small><b>'+money(t.total)+'</b></div><div class="sb2"><small>'+L('تعداد')+'</small><b>'+D(t.count)+'</b></div></div>'+
   (ui.listSearchOpen?'<div class="field search"><input id="lq" type="search" placeholder="'+L('جستجو در این لیست')+'" value="'+esc(ui.listQ)+'" autocomplete="off"></div>':'')+
-  '<button class="btn pri wide" data-act="newRem">'+I.plus+' '+L('ثبت حواله')+'</button>'+
   '<div id="rlist">'+(full.length?remRows(list):'<div class="empty"><b>'+L('حواله‌ای ثبت نشده')+'</b>'+L('با «ثبت حواله» اولین مورد را اضافه کنید.')+'</div>')+'</div>'+
+  '<button class="fab no-print" data-act="newRem" aria-label="'+L('ثبت حواله')+'">'+I.plus+'</button>'+
   '</main>';
 };
 
@@ -1339,7 +1496,7 @@ function dateSelects(iso){
   var cy=greg?new Date().getFullYear():jToday()[0],d='',m='',y='',i;
   for(i=1;i<=31;i++)d+='<option value="'+i+'"'+(i===t[2]?' selected':'')+'>'+D(i)+'</option>';
   for(i=0;i<12;i++)m+='<option value="'+(i+1)+'"'+(i+1===t[1]?' selected':'')+'>'+names[i]+'</option>';
-  var lo=Math.min(cy-5,t[0]),hi=Math.max(cy+1,t[0]);
+  var lo=Math.min(greg?2025:1404,t[0]),hi=Math.max(greg?2035:1414,t[0]);
   for(i=hi;i>=lo;i--)y+='<option value="'+i+'"'+(i===t[0]?' selected':'')+'>'+D(i)+'</option>';
   return '<div class="field" id="fld_date"><label>'+L('تاریخ')+' ('+L(greg?'میلادی':'شمسی')+')</label><div class="three"><select id="f_d" aria-label="'+(db.lang==='en'?'Day':'روز')+'">'+d+'</select><select id="f_m" aria-label="'+(db.lang==='en'?'Month':'ماه')+'">'+m+'</select><select id="f_y" aria-label="'+(db.lang==='en'?'Year':'سال')+'">'+y+'</select></div><div class="msg" id="msg_date" hidden></div></div>';
 }
@@ -1357,7 +1514,7 @@ V.form=function(p){
   field('f_father',L('ولد گیرنده (اختیاری)'),r?r.fatherName:'')+
   field('f_amt',L('مبلغ به عدد (افغانی)'),amt,{amt:true,num:true,ltr:true})+
   '<div class="field"><label>'+L('مبلغ به حروف')+'</label><div class="words-box" id="amtWords">'+(r?words(r.amount)+' '+L('افغانی'):'—')+'</div></div>'+
-  field('f_place',L('محل پرداخت'),r?r.place:'')+
+  placeField(r?r.place:'')+
   field('f_notes',L('توضیحات (اختیاری)'),r?r.notes:'',{area:true})+
   '<div class="btns"><button class="btn pri" data-act="saveRem">'+L(edit?'ذخیره تغییرات':'ثبت حواله')+'</button><button class="btn" data-act="back">'+L('انصراف')+'</button></div></main>';
 };
@@ -1580,12 +1737,20 @@ function lockNow(){
   document.documentElement.classList.add('locked');
   showLockGate(true);
 }
+/* privacy cover: hide all content in the recent-apps preview */
+function privCover(on){
+  var e=document.getElementById('privCover');
+  if(on){if(!e){e=document.createElement('div');e.id='privCover';e.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#080b12;display:flex;align-items:center;justify-content:center;color:#d9b866;font:700 22px sans-serif';e.textContent='دفتر حواله';document.body.appendChild(e)}}
+  else if(e)e.remove();
+}
+window.addEventListener('pageshow',function(){privCover(false)});
 document.addEventListener('visibilitychange',function(){
+  privCover(document.hidden);
   if(document.hidden){lockNow();return}
   var cfg=loadLockCfg();
   if(cfg.enabled&&cfg.method==='webauthn'&&document.getElementById('lockGate')&&!authBusy)setTimeout(function(){A.lockTryWebauthn()},250);
 });
-window.addEventListener('pagehide',lockNow);
+window.addEventListener('pagehide',function(){privCover(true);lockNow()});
 /* ask for fingerprint / PIN before saving, editing or deleting a remittance */
 var GUARD_KEY='hawala_guard_off';
 function guardOn(){try{return localStorage.getItem(GUARD_KEY)!=='1'}catch(e){return true}}
@@ -1662,7 +1827,7 @@ A.lockSavePin=function(){
   });
 };
 
-A.back=function(){back()};
+A.back=function(){navBack()};
 A.closeSheet=function(){closeSheet()};
 A.sheetBg=function(el,e){if(e.target===el)closeSheet()};
 A.confirmOk=function(){var f=onOk;onOk=null;closeSheet();if(f)f()};
@@ -1693,7 +1858,7 @@ function commonItems(noBackup){
 }
 A.homeMenu=function(){
   openMenu([
-    (deferredInstall?[{a:'installApp',t:'نصب برنامه روی گوشی'}]:[]).concat([{a:'cloudSheet',t:'ابری و همگام‌سازی'},{a:'accountInfo',t:'حساب کاربری و ورود'}]),
+    (deferredInstall?[{a:'installApp',t:'نصب برنامه روی گوشی'}]:[]).concat([{a:'cloudSheet',t:'ابری و همگام‌سازی'},{a:'addrSheet',t:'آدرس‌های ثبت‌شده'},{a:'accountInfo',t:'حساب کاربری و ورود'}]),
     commonItems(),
     [{a:'reportAll',t:'گزارش PDF همهٔ حساب‌ها'},{a:'csvAll',t:'خروجی CSV همهٔ حساب‌ها'}]
   ],'تنظیمات');
@@ -1726,7 +1891,7 @@ A.cloudSheet=function(){
   var body=!on?L('داده‌ها فقط روی همین مرورگر ذخیره می‌شوند. برای هماهنگی زنده بین دو گوشی (شما و پدرتان)، باید یک پروژهٔ Firebase رایگان بسازید و اطلاعاتش را اینجا وارد کنید.'):
     signedIn?L('اتصال ابری فعال است. وضعیت: ')+cloudStatusText():
     L('اتصال ابری تنظیم شده ولی وارد نشده‌اید — معمولاً چون هنگام باز شدن برنامه اینترنت وصل نبوده. اطلاعات شما همین‌جا در گوشی امن است؛ برای ارسال/دریافت با گوشی دیگر، دوباره وارد شوید.');
-  var btns=!on?sgrp([srow('cloudSetup','',{c:'#3b82f6',s:'cloud'},'اتصال به Firebase','وارد کردن اطلاعات پروژه')])+'<div class="btns"><button class="btn" data-act="closeSheet">'+L('فعلاً نه')+'</button></div>':
+  var btns=!on?sgrp([srow('cloudSetup','',{c:'#3b82f6',s:'cloud'},'اتصال ابری','ورود با ایمیل و رمز عبور')])+'<div class="btns"><button class="btn" data-act="closeSheet">'+L('فعلاً نه')+'</button></div>':
     signedIn?sgrp([(E.meta?srow('encOff','',{c:'#22c55e',s:'lock'},'رمزگذاری سراسری فعال است','برای خاموش کردن بزنید'):srow('encSetup','',{c:'#f59e0b',s:'lock'},'رمزگذاری سراسری داده‌ها','قفل کردن اطلاعات ابری با رمز اصلی')),srow('cloudDisconnect','',{c:'#ef4444',s:'plug'},'قطع اتصال ابری','',{d:1})])+'<div class="btns"><button class="btn" data-act="closeSheet">'+L('بستن')+'</button></div>':
     sgrp([srow('cloudRetry','',{c:'#22c55e',s:'cloud'},'ورود دوباره','تلاش دوباره برای اتصال'),srow('cloudDisconnect','',{c:'#ef4444',s:'plug'},'قطع اتصال ابری','',{d:1})])+'<div class="btns"><button class="btn" data-act="closeSheet">'+L('بستن')+'</button></div>';
   openSheet('<h2 class="mh">'+L('ابری و همگام‌سازی')+'</h2><p class="mu" style="margin:0 6px 12px">'+body+'</p>'+btns);
@@ -1809,6 +1974,8 @@ A.accountInfo=function(){
   openSheet('<h2 class="mh">'+L('حساب کاربری و ورود')+'</h2><div class="sgrp"><div class="sr"><span class="si" style="background:#14b8a6"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+MI_SVG.user+'</svg></span><span class="st" style="line-height:1.7;font-size:14px">'+L('ورود با گوگل یا ایمیل و هماهنگی بین گوشی‌ها (تا ۳ کاربر) در نسخهٔ آنلاین اضافه می‌شود. این نسخه اطلاعات را فقط روی همین مرورگر نگه می‌دارد، پس پشتیبان‌گیری منظم مهم است.')+'</span></div></div><div class="btns"><button class="btn" data-act="closeSheet">'+L('متوجه شدم')+'</button></div>');
 };
 A.cloudSetup=function(){
+  try{localStorage.removeItem(FB_OFF_KEY)}catch(e){}
+  if(loadFbConfig()===FB_DEFAULT){closeSheet();toast(L('در حال اتصال...'));initCloud();return}
   openSheet('<h2 class="mh">'+L('اتصال به Firebase')+'</h2><p class="mu" style="margin:0 6px 12px">'+L('این ۴ مقدار را از Firebase Console، بخش Project settings ← Web app کپی کنید.')+'</p>'+
     '<div class="sgrp">'+field('fb_apiKey','apiKey','',{ltr:true,ic:{c:'#6366f1',s:'key'}})+field('fb_authDomain','authDomain (مثلاً x.firebaseapp.com)','',{ltr:true,ic:{c:'#3b82f6',s:'globe'}})+
     field('fb_projectId','projectId','',{ltr:true,ic:{c:'#14b8a6',s:'doc'}})+field('fb_appId','appId','',{ltr:true,ic:{c:'#f59e0b',s:'plug'}})+'</div>'+
@@ -1949,6 +2116,7 @@ A.saveRem=function(){
     var r=list.find(function(x){return x.id===cur.rid});
     Object.assign(r,v,{edited:true,editedAt:nowISO(),editedBy:currentUserLabel(),updatedAt:nowISO()});clearCloudDeleted(cur.kind,cur.cid,r.id);
   }else{
+    addrUsed(v.place);
     list.unshift(Object.assign({id:uid(),createdAt:nowISO(),updatedAt:nowISO(),shares:0,edited:false,editedAt:'',createdBy:currentUserLabel(),editedBy:''},v));
   }
   save();stack.pop();render();window.scrollTo(0,0);toast(L(edit?'تغییرات ذخیره شد':'حواله ثبت شد'));
@@ -2303,6 +2471,41 @@ document.addEventListener('click',function(e){
   f(el,e);
 });
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet()});
+A.addrDrop=function(){
+  var d=$('#pdrop');if(!d)return;
+  if(!d.hidden){d.hidden=true;return}
+  var l=addrSorted();
+  d.innerHTML=l.length?l.map(function(a){return '<button type="button" class="pit" data-act="addrPick" data-v="'+esc(a.n)+'">'+esc(a.n)+'</button>'}).join(''):'<div class="pem">'+L('هنوز آدرسی ثبت نشده؛ از تنظیمات اضافه کن')+'</div>';
+  d.hidden=false;
+};
+A.addrPick=function(el){var i=$('#f_place');i.value=el.dataset.v;var d=$('#pdrop');if(d)d.hidden=true;var f=$('#fld_f_place');if(f)f.classList.remove('err');var m=$('#msg_f_place');if(m)m.hidden=true};
+document.addEventListener('click',function(e){var d=document.getElementById('pdrop');if(d&&!d.hidden&&!e.target.closest('.pw'))d.hidden=true});
+function addrStamp(){db.settingsUpdatedAt=nowISO();save()}
+A.addrSheet=function(){
+  var l=addrSorted();
+  openSheet('<h2 class="mh">'+L('آدرس‌های ثبت‌شده')+'</h2><p class="mu" style="margin:0 6px 12px">'+L('این آدرس‌ها هنگام ثبت حواله در فهرست «محل پرداخت» پیشنهاد می‌شوند. آدرس پرکاربردتر بالاتر می‌آید.')+'</p>'+
+    '<div class="sgrp">'+(l.length?l.map(function(a){return '<div class="arow"><span>'+esc(a.n)+(a.c?' <small class="mu">('+D(a.c)+')</small>':'')+'</span><button class="adel" data-act="addrDel" data-v="'+esc(a.n)+'" aria-label="'+esc(L('حذف'))+'">✕</button></div>'}).join(''):'<div class="pem">'+L('هنوز آدرسی ثبت نشده')+'</div>')+'</div>'+
+    '<div class="sgrp">'+field('ad_new','آدرس تازه','')+'</div>'+
+    '<div class="btns"><button class="btn pri" data-act="addrAdd">'+L('افزودن')+'</button></div>');
+};
+A.addrAdd=function(){
+  var v=$('#ad_new').value.trim().slice(0,100);if(!v)return;
+  if(!db.addrs.some(function(a){return a.n.toLowerCase()===v.toLowerCase()}))db.addrs.push({n:v,c:0});
+  addrStamp();A.addrSheet();
+};
+A.addrDel=function(el){
+  db.addrs=db.addrs.filter(function(a){return a.n!==el.dataset.v});addrStamp();A.addrSheet();
+};
+/* phone back button: one step back like the "<" button; menus first; twice on home to exit */
+var exitArm=0;
+try{history.replaceState({hw:0},'');history.pushState({hw:1},'')}catch(e){}
+window.addEventListener('popstate',function(){
+  if(document.getElementById('lockGate')||document.getElementById('encGate')||document.getElementById('loginGate')){try{history.pushState({hw:1},'')}catch(e){}return}
+  if(sheetEl){try{history.pushState({hw:1},'')}catch(e){}closeSheet();return}
+  if(stack.length>1){try{history.pushState({hw:1},'')}catch(e){}navBack();return}
+  if(Date.now()-exitArm<2500){exitArm=0;history.back();return}
+  exitArm=Date.now();try{history.pushState({hw:1},'')}catch(e){}toast('برای خروج دوباره بزنید');
+});
 
 if(!storageOk)setTimeout(function(){toast('ذخیره‌سازی مرورگر فعال نیست؛ پشتیبان بگیرید')},600);
 var lockOn=loadLockCfg().enabled;
