@@ -1229,44 +1229,24 @@ function navSlideOut(w){
   requestAnimationFrame(function(){requestAnimationFrame(function(){w.style.transform='translateX('+(sgn()*100)+'%)'})});
   setTimeout(function(){w.remove();if(!document.querySelector('.pgwrap'))document.documentElement.classList.remove('navanim')},NAVMS+40);
 }
+/* swipe from right to left (finger moves in the exit direction) = one step back, with the slide-out animation */
+var swp=null;
+function swipeOk(t){return stack.length>1&&!sheetEl&&!document.getElementById('lockGate')&&!document.getElementById('encGate')&&!document.getElementById('loginGate')&&!t.closest('input,textarea,select,.pw')}
+document.addEventListener('touchstart',function(e){
+  if(e.touches.length!==1||!swipeOk(e.target)){swp=null;return}
+  swp={x:e.touches[0].clientX,y:e.touches[0].clientY,t:Date.now()};
+},{passive:true});
+document.addEventListener('touchend',function(e){
+  var d=swp;swp=null;if(!d||!e.changedTouches.length)return;
+  var dx=e.changedTouches[0].clientX-d.x,dy=e.changedTouches[0].clientY-d.y;
+  if(dx*sgn()>0&&Math.abs(dx)>=80&&Math.abs(dx)>Math.abs(dy)*1.8&&Date.now()-d.t<900)navBack();
+});
+document.addEventListener('touchcancel',function(){swp=null});
 function navBack(){
   if(stack.length<=1||navBusy)return;
   if(navReduced()){back();return}
   var w=navTakeOut();stack.pop();render();window.scrollTo(0,0);navSlideOut(w);
 }
-var navDrag=null;
-function navOk(t){return stack.length>1&&!navBusy&&!sheetEl&&!document.getElementById('lockGate')&&!document.getElementById('encGate')&&!document.getElementById('loginGate')&&!t.closest('input,textarea,select,.pw')}
-document.addEventListener('touchstart',function(e){
-  if(e.touches.length!==1||!navOk(e.target)){navDrag=null;return}
-  navDrag={x:e.touches[0].clientX,y:e.touches[0].clientY,t0:Date.now(),on:false,m:0};
-},{passive:true});
-document.addEventListener('touchmove',function(e){
-  var d=navDrag;if(!d||e.touches.length!==1)return;
-  var dx=e.touches[0].clientX-d.x,dy=e.touches[0].clientY-d.y;
-  if(!d.on){
-    if(Math.abs(dy)>12&&Math.abs(dy)>Math.abs(dx)*0.8){navDrag=null;return}
-    if(Math.abs(dx)<=12)return;
-    if(dx*sgn()<0||Math.abs(dx)<=Math.abs(dy)*1.5){navDrag=null;return}
-    if(navReduced()){navDrag=null;return}
-    d.on=true;d.sy=window.scrollY;d.w=navTakeOut();d.w.style.transition='none';d.saved=stack.pop();render();window.scrollTo(0,0);
-  }
-  e.preventDefault();
-  var m=Math.max(0,Math.min(Math.abs(dx),window.innerWidth));d.m=m;
-  d.w.style.transform='translateX('+(sgn()*m)+'px)';
-},{passive:false});
-function navDragEnd(){
-  var d=navDrag;navDrag=null;if(!d||!d.on)return;
-  var fast=d.m/Math.max(1,Date.now()-d.t0)>0.5&&d.m>40;
-  if(d.m>window.innerWidth*0.4||fast){navSlideOut(d.w);return}
-  navBusy=true;var w=d.w;w.style.transition='transform '+NAVMS+'ms ease';w.style.transform='translateX(0)';
-  setTimeout(function(){
-    stack.push(d.saved);
-    app.innerHTML='';var a=w.firstChild;while(a.firstChild)app.appendChild(a.firstChild);
-    w.remove();document.documentElement.classList.remove('navanim');window.scrollTo(0,d.sy);navBusy=false;
-  },NAVMS+30);
-}
-document.addEventListener('touchend',navDragEnd);
-document.addEventListener('touchcancel',navDragEnd);
 function back(){if(stack.length>1)stack.pop();render();window.scrollTo(0,0)}
 function header(title,o){
   o=o||{};
@@ -1737,16 +1717,23 @@ function lockNow(){
   document.documentElement.classList.add('locked');
   showLockGate(true);
 }
-/* privacy cover: hide all content in the recent-apps preview */
-function privCover(on){
-  var e=document.getElementById('privCover');
-  if(on){if(!e){e=document.createElement('div');e.id='privCover';e.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#080b12;display:flex;align-items:center;justify-content:center;color:#d9b866;font:700 22px sans-serif';e.textContent='دفتر حواله';document.body.appendChild(e)}}
-  else if(e)e.remove();
-}
+/* privacy cover: black screen with the app logo, shown as early as possible when the app is left
+   (recent-apps preview). The element exists from the start so showing it is instant. */
+var privEl=document.createElement('div');
+privEl.id='privCover';
+privEl.style.cssText='display:none;position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483647;background:#000;align-items:center;justify-content:center';
+privEl.innerHTML='<img src="icon-192.png" alt="" style="width:96px;height:96px;border-radius:22px;opacity:.95">';
+document.body.appendChild(privEl);
+function privCover(on){privEl.style.display=on?'flex':'none'}
 window.addEventListener('pageshow',function(){privCover(false)});
+window.addEventListener('blur',function(){privCover(true)});
+window.addEventListener('focus',function(){if(!document.hidden)privCover(false)});
+document.addEventListener('freeze',function(){privCover(true)});
+document.addEventListener('resume',function(){privCover(false)});
 document.addEventListener('visibilitychange',function(){
   privCover(document.hidden);
   if(document.hidden){lockNow();return}
+  privCover(false);
   var cfg=loadLockCfg();
   if(cfg.enabled&&cfg.method==='webauthn'&&document.getElementById('lockGate')&&!authBusy)setTimeout(function(){A.lockTryWebauthn()},250);
 });
@@ -2498,7 +2485,13 @@ A.addrDel=function(el){
 };
 /* phone back button: one step back like the "<" button; menus first; twice on home to exit */
 var exitArm=0;
-try{history.replaceState({hw:0},'');history.pushState({hw:1},'')}catch(e){}
+try{history.replaceState({hw:0},'')}catch(e){}
+/* Chrome skips history entries a page adds without a user gesture, so the extra "back" entry is added on the
+   first touch/tap (and re-added whenever it is missing), never at load */
+function armBack(){try{if(!history.state||history.state.hw!==1)history.pushState({hw:1},'')}catch(e){}}
+document.addEventListener('pointerdown',armBack,true);
+document.addEventListener('touchstart',armBack,{capture:true,passive:true});
+document.addEventListener('click',armBack,true);
 window.addEventListener('popstate',function(){
   if(document.getElementById('lockGate')||document.getElementById('encGate')||document.getElementById('loginGate')){try{history.pushState({hw:1},'')}catch(e){}return}
   if(sheetEl){try{history.pushState({hw:1},'')}catch(e){}closeSheet();return}
